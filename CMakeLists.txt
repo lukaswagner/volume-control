@@ -15,7 +15,9 @@ set(header_dir include)
 
 set(sources
     ${source_dir}/main.cpp
-    ${source_dir}/volume.cpp)
+    ${source_dir}/volume.cpp
+    ${source_dir}/session.cpp
+    ${source_dir}/helper.cpp)
 
 # executables
 add_executable(VolumeControl ${sources})

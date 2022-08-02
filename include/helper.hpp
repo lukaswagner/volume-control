@@ -1,14 +1,14 @@
 #pragma once
 
+#include <iostream>
+#include <stdexcept>
 #include <string>
 
-std::string toString(LPWSTR wstr)
-{
-    auto len = wcstombs(NULL, wstr, 0);
-    auto cstr = (char*)malloc(len * sizeof(char));
-    len = wcstombs(cstr, wstr, len);
-    auto result = std::string(cstr);
-    free(cstr);
-    CoTaskMemFree(wstr);
-    return result;
-}
+#include <combaseapi.h>
+
+std::string toString(LPWSTR wstr);
+
+#define CHECK(status, message)                                                 \
+    if (status != S_OK) throw std::runtime_error(message);
+
+#define DEBUG_VAL(value) std::cerr << #value << ": " << (value) << std::endl;

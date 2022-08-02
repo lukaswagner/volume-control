@@ -5,9 +5,6 @@
 
 #include "helper.hpp"
 
-#define CHECK(status, message)                                                 \
-    if (status != S_OK) throw std::runtime_error(message);
-
 std::string Volume::readProperty(REFPROPERTYKEY key)
 {
     PROPVARIANT prop;
@@ -46,14 +43,24 @@ Volume::Volume()
         NULL,
         (void**)&m_deviceVolume);
     CHECK(result, "could not acquire device volume");
+
+    result = m_device->Activate(
+        __uuidof(IAudioSessionManager2),
+        CLSCTX_ALL,
+        NULL,
+        (void**)&m_sessionManager);
+    CHECK(result, "could not acquire session manager");
+
+    result = m_sessionManager->GetSessionEnumerator(&m_sessionList);
+    CHECK(result, "could not acquire session list");
 }
 
 std::string Volume::getDeviceId()
 {
-    LPWSTR* id;
-    auto result = m_device->GetId(id);
+    LPWSTR id;
+    auto result = m_device->GetId(&id);
     CHECK(result, "could not acquire device id");
-    return toString(*id);
+    return toString(id);
 }
 
 float Volume::getDeviceVolume()
@@ -82,4 +89,29 @@ void Volume::setDeviceMute(bool mute)
 {
     auto result = m_deviceVolume->SetMute(mute, NULL);
     CHECK(result, "could not write mute");
+}
+
+int Volume::getSessionCount()
+{
+    int count;
+    auto result = m_sessionList->GetCount(&count);
+    CHECK(result, "could not read count");
+    return count;
+}
+
+Session Volume::getSession(int id)
+{
+    IAudioSessionControl* controls;
+    auto result = m_sessionList->GetSession(id, &controls);
+    CHECK(result, "could not acquire session");
+    return Session(controls);
+}
+
+std::vector<Session> Volume::getSessions()
+{
+    std::vector<Session> result;
+    auto count = getSessionCount();
+    for (int i = 0; i < count; ++i)
+        result.push_back(getSession(i));
+    return result;
 }

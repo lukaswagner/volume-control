@@ -4,16 +4,18 @@
 
 int main(int argc, char const* argv[])
 {
-    std::cerr << "hi" << std::endl;
     try
     {
         Volume volume;
-        std::cerr << volume.getDefaultDeviceId() << std::endl;
+        std::cerr << volume.getDeviceId() << std::endl
+                  << volume.getDeviceName() << std::endl
+                  << volume.getDeviceVolume() << std::endl;
+        // volume.setDeviceVolume(0.2);
     }
     catch (const std::exception& e)
     {
         std::cerr << e.what() << std::endl;
     }
-    std::cerr << "bye" << std::endl;
+    std::cerr << "done" << std::endl;
     return 0;
 }

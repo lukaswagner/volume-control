@@ -69,3 +69,17 @@ void Volume::setDeviceVolume(float volume)
     auto result = m_deviceVolume->SetMasterVolumeLevelScalar(volume, NULL);
     CHECK(result, "could not write volume");
 }
+
+bool Volume::getDeviceMute()
+{
+    BOOL mute;
+    auto result = m_deviceVolume->GetMute(&mute);
+    CHECK(result, "could not read mute");
+    return mute != 0;
+}
+
+void Volume::setDeviceMute(bool mute)
+{
+    auto result = m_deviceVolume->SetMute(mute, NULL);
+    CHECK(result, "could not write mute");
+}

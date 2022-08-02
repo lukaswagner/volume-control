@@ -28,4 +28,6 @@ public:
     }
     float getDeviceVolume();
     void setDeviceVolume(float volume);
+    bool getDeviceMute();
+    void setDeviceMute(bool mute);
 };

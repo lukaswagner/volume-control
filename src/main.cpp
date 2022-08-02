@@ -11,6 +11,7 @@ int main(int argc, char const* argv[])
                   << volume.getDeviceName() << std::endl
                   << volume.getDeviceVolume() << std::endl;
         // volume.setDeviceVolume(0.2);
+        // volume.setDeviceMute(!volume.getDeviceMute());
     }
     catch (const std::exception& e)
     {

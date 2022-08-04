@@ -7,14 +7,15 @@ int main(int argc, char const* argv[])
     try
     {
         Volume volume;
-        std::cerr << "id       : " << volume.getDeviceId() << std::endl
-                  << "name     : " << volume.getDeviceName() << std::endl
-                  << "volume   : " << volume.getDeviceVolume() << std::endl
-                  << "mute     : " << volume.getDeviceMute() << std::endl
-                  << "sessions : " << volume.getSessionCount() << std::endl;
-        // volume.setDeviceVolume(0.2);
-        // volume.setDeviceMute(!volume.getDeviceMute());
-        auto sessions = volume.getSessions();
+        auto device = volume.getDevice();
+        std::cerr << "id       : " << device.getId() << std::endl
+                  << "name     : " << device.getName() << std::endl
+                  << "volume   : " << device.getVolume() << std::endl
+                  << "mute     : " << device.getMute() << std::endl
+                  << "sessions : " << device.getSessionCount() << std::endl;
+        // device.setVolume(0.2);
+        // device.setMute(!device.getMute());
+        auto sessions = device.getSessions();
         for (int i = 0; i < sessions.size(); ++i)
         {
             auto session = sessions[i];

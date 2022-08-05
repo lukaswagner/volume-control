@@ -1,5 +1,6 @@
 #include "session.hpp"
 
+#include <iostream>
 #include <regex>
 
 #include "helper.hpp"
@@ -13,15 +14,13 @@ Session::Session(IAudioSessionControl* control)
 
 std::string Session::getName()
 {
-    // try reading display name
-    LPWSTR displayName;
-    auto result = m_control->GetDisplayName(&displayName);
-    CHECK(result, "could not read name");
-    auto name = toString(displayName);
-    if (name.length() > 0) return name;
+    // check for system session
+    if (isSystem()) return "System";
 
+    // try reading session identifier (for applications)
     LPWSTR sessionIdentifier;
-    result = m_control2->GetSessionIdentifier(&sessionIdentifier);
+    std::string name = "";
+    auto result = m_control2->GetSessionIdentifier(&sessionIdentifier);
     CHECK(result, "could not read session identifier");
     auto idStr = toString(sessionIdentifier);
     std::regex exe(R"(\\(\w+)\.)");
@@ -29,6 +28,27 @@ std::string Session::getName()
     if (std::regex_search(idStr, match, exe)) name = match[1];
 
     return name;
+}
+
+std::string Session::getPath()
+{
+    // system session: stored in display name
+    if (isSystem())
+    {
+        LPWSTR displayName;
+        auto result = m_control->GetDisplayName(&displayName);
+        CHECK(result, "could not read name");
+        auto path = toString(displayName);
+        return ::getPath(path);
+    }
+
+    // try reading session identifier (for applications)
+    LPWSTR sessionIdentifier;
+    CHECK(
+        m_control2->GetSessionIdentifier(&sessionIdentifier),
+        "could not read session identifier");
+    auto idStr = toString(sessionIdentifier);
+    return ::getPath(idStr);
 }
 
 float Session::getVolume()
@@ -57,4 +77,38 @@ void Session::setMute(bool mute)
 {
     auto result = m_volume->SetMute(mute, NULL);
     CHECK(result, "could not write mute");
+}
+
+#define PADDED_HEADER(stream, text, width)                                     \
+    stream << text << std::string(width - strlen(text), ' ') << ": "
+#define DUMP(text) PADDED_HEADER(stream, text, 15)
+
+void Session::dumpInfo(std::ostream& stream)
+{
+    LPWSTR p;
+
+    stream << "### session info ###" << std::endl;
+
+    CHECK(m_control->GetDisplayName(&p), "GetDisplayName failed");
+    DUMP("display name") << toString(p) << std::endl;
+
+    CHECK(m_control->GetIconPath(&p), "GetIconPath failed");
+    DUMP("icon path") << toString(p) << std::endl;
+
+    DUMP("is system") << (isSystem() ? "true" : "false") << std::endl;
+
+    if (!isSystem())
+    {
+        DWORD w;
+        CHECK(m_control2->GetProcessId(&w), "GetProcessId failed");
+        DUMP("process id") << w << std::endl;
+    }
+
+    CHECK(m_control2->GetSessionIdentifier(&p), "GetSessionIdentifier failed");
+    DUMP("session id") << toString(p) << std::endl;
+
+    DUMP("getName") << getName() << std::endl;
+    DUMP("getPath") << getPath() << std::endl;
+    DUMP("getVolume") << getVolume() << std::endl;
+    DUMP("getMute") << (getMute() ? "true" : "false") << std::endl;
 }

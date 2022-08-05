@@ -19,9 +19,7 @@ int main(int argc, char const* argv[])
         for (int i = 0; i < sessions.size(); ++i)
         {
             auto session = sessions[i];
-            std::cerr << "name     : " << session.getName() << std::endl
-                      << "volume   : " << session.getVolume() << std::endl
-                      << "mute     : " << session.getMute() << std::endl;
+            session.dumpInfo(std::cerr);
         }
     }
     catch (const std::exception& e)

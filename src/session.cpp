@@ -79,10 +79,6 @@ void Session::setMute(bool mute)
     CHECK(result, "could not write mute");
 }
 
-#define PADDED_HEADER(stream, text, width)                                     \
-    stream << text << std::string(width - strlen(text), ' ') << ": "
-#define DUMP(text) PADDED_HEADER(stream, text, 15)
-
 void Session::dumpInfo(std::ostream& stream)
 {
     LPWSTR p;

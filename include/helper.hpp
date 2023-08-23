@@ -16,3 +16,8 @@ std::string toDosPath(std::string path);
     if (status != S_OK) throw std::runtime_error(message);
 
 #define DEBUG_VAL(value) std::cerr << #value << ": " << (value) << std::endl;
+
+#define PADDED_HEADER(stream, text, width)                                     \
+    stream << text << std::string(width - strlen(text), ' ') << ": "
+#define DUMPTO(stream, text) PADDED_HEADER(stream, text, 15)
+#define DUMP(text) DUMPTO(stream, text)

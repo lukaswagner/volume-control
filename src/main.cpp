@@ -1,25 +1,33 @@
 #include <iostream>
 
+#include "helper.hpp"
 #include "volume.hpp"
 
 int main(int argc, char const* argv[])
 {
+    auto verbose = false;
+    for(auto i = 0; i < argc; ++i)
+    {
+        if(std::strcmp(argv[i], "-v") == 0 || std::strcmp(argv[i], "--verbose") == 0)
+            verbose = true;
+    }
+
     try
     {
         Volume volume;
-        auto device = volume.getDevice();
-        std::cerr << "id       : " << device.getId() << std::endl
-                  << "name     : " << device.getName() << std::endl
-                  << "volume   : " << device.getVolume() << std::endl
-                  << "mute     : " << device.getMute() << std::endl
-                  << "sessions : " << device.getSessionCount() << std::endl;
-        // device.setVolume(0.2);
-        // device.setMute(!device.getMute());
-        auto sessions = device.getSessions();
-        for (int i = 0; i < sessions.size(); ++i)
+        auto devices = volume.getAllDevices(Output);
+        DUMPTO(std::cerr, "num of devices") << devices.size() << std::endl;
+        for (auto &&device : devices)
         {
-            auto session = sessions[i];
-            session.dumpInfo(std::cerr);
+            if(verbose) device.dumpInfo(std::cerr);
+            else std::cerr << device.getName() << std::endl;
+            auto sessions = device.getSessions();
+            for (int i = 0; i < sessions.size(); ++i)
+            {
+                auto session = sessions[i];
+                if(verbose) session.dumpInfo(std::cerr);
+                else std::cerr << session.getName() << std::endl;
+            }
         }
     }
     catch (const std::exception& e)

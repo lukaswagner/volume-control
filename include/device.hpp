@@ -38,4 +38,5 @@ public:
     int getSessionCount();
     Session getSession(int id);
     std::vector<Session> getSessions();
+    void dumpInfo(std::ostream& stream);
 };

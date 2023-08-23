@@ -99,3 +99,12 @@ std::vector<Session> Device::getSessions()
         result.push_back(getSession(i));
     return result;
 }
+
+void Device::dumpInfo(std::ostream& stream) {
+    stream << "### device info ###" << std::endl;
+    DUMP("getId") << getId() << std::endl;
+    DUMP("getName") << getName() << std::endl;
+    DUMP("getVolume") << getVolume() << std::endl;
+    DUMP("getMute") << getMute() << std::endl;
+    DUMP("getSessionCount") << getSessionCount() << std::endl;
+}

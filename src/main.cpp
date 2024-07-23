@@ -5,6 +5,9 @@
 
 int main(int argc, char const* argv[])
 {
+    // required to fix wide character conversion
+    setlocale(LC_ALL, ".OCP");
+
     auto verbose = false;
     for(auto i = 0; i < argc; ++i)
     {

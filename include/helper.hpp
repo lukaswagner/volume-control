@@ -7,7 +7,7 @@
 
 #include <combaseapi.h>
 
-std::string toString(LPWSTR wstr);
+std::string toString(LPWSTR wstr, boolean freeWStr = true);
 std::string replaceEnvVars(std::string str);
 std::string getPath(std::string str);
 std::string toDosPath(std::string path);

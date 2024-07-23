@@ -4,16 +4,21 @@
 
 #include <fileapi.h>
 
-std::string toString(LPWSTR wstr)
+std::string toString(LPWSTR wstr, boolean freeWStr)
 {
-    auto len = wcstombs(NULL, wstr, 0);
+    size_t len;
+    auto result = wcstombs_s(&len, NULL, 0, wstr, 0);
+    if (result != S_OK) throw std::runtime_error("could not determine string length");
     if (len == 0) return "";
+
     auto cstr = (char*)malloc((len + 1) * sizeof(char));
-    len = wcstombs(cstr, wstr, len + 1);
-    auto result = std::string(cstr);
+    result = wcstombs_s(&len, cstr, len + 1, wstr, len);
+    if (result != S_OK) throw std::runtime_error("could not convert string");
+
+    auto string = std::string(cstr);
     free(cstr);
-    CoTaskMemFree(wstr);
-    return result;
+    if(freeWStr) CoTaskMemFree(wstr);
+    return string;
 }
 
 std::string replaceEnvVars(std::string str)
@@ -26,7 +31,12 @@ std::string replaceEnvVars(std::string str)
     {
         auto m = match[0];
         auto envName = m.str().substr(1, m.length() - 2);
+
+        // ignore warning for stdlib call
+        #pragma warning(disable: 4996)
         auto replacement = std::getenv(envName.c_str());
+        #pragma warning(default: 4996)
+
         if (replacement == nullptr)
         {
             start = m.second;
@@ -60,7 +70,6 @@ void buildDeviceMap()
     std::string outStr;
 
     std::wstring inWideStr;
-    std::wstring outWideStr;
 
     const size_t inChars = 256;
     size_t outChars;
@@ -77,9 +86,8 @@ void buildDeviceMap()
             auto err = GetLastError();
             continue;
         }
-        outWideStr = std::wstring(outWideCStr);
-        if (outWideStr.length() == 0) continue;
-        outStr = std::string(outWideStr.begin(), outWideStr.end());
+        outStr = toString(outWideCStr, false);
+        if (outStr.length() == 0) continue;
         deviceMap[outStr] = inStr;
     }
 

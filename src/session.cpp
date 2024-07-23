@@ -4,6 +4,7 @@
 #include <regex>
 
 #include "helper.hpp"
+#include "mainWindow.hpp"
 
 Session::Session(IAudioSessionControl* control)
     : m_control(control)
@@ -17,7 +18,25 @@ std::string Session::getName()
     // check for system session
     if (isSystem()) return "System";
 
-    // try reading session identifier (for applications)
+    // try getting the session name
+    LPWSTR displayNameTemp;
+    CHECK(m_control->GetDisplayName(&displayNameTemp), "could not read display name");
+    auto displayName = toString(displayNameTemp);
+    if(displayName.length() > 0) return displayName;
+
+    // fallback based on https://stackoverflow.com/a/27088482
+    DWORD procId;
+    CHECK(m_control2->GetProcessId(&procId), "GetProcessId failed");
+    auto mainWindow = FindMainWindow(procId);
+    const auto length = 256u;
+    wchar_t title[length];
+    auto read = GetWindowTextW(mainWindow, title, length);
+    if(read > 0)
+    {
+        return toString(title, false);
+    }
+
+    // another fallback based on session identifier (for applications)
     LPWSTR sessionIdentifier;
     std::string name = "";
     auto result = m_control2->GetSessionIdentifier(&sessionIdentifier);

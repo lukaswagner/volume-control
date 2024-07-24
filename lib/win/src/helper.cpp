@@ -4,6 +4,8 @@
 
 #include <fileapi.h>
 
+namespace VolumeControl
+{
 std::string toString(LPWSTR wstr, boolean freeWStr)
 {
     size_t len;
@@ -110,4 +112,5 @@ std::string toDosPath(std::string path)
             path.replace(start, start + p.first.length(), p.second);
     }
     return path;
+}
 }

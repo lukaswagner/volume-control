@@ -4,6 +4,8 @@
 
 #include "helper.hpp"
 
+namespace VolumeControl
+{
 std::string Device::readProperty(REFPROPERTYKEY key)
 {
     PROPVARIANT prop;
@@ -83,17 +85,17 @@ int Device::getSessionCount()
     return count;
 }
 
-Session Device::getSession(int id)
+std::shared_ptr<ISession> Device::getSession(int id)
 {
     IAudioSessionControl* controls;
     auto result = m_sessionList->GetSession(id, &controls);
     CHECK(result, "could not acquire session");
-    return Session(controls);
+    return std::make_shared<Session>(controls);
 }
 
-std::vector<Session> Device::getSessions()
+std::vector<std::shared_ptr<ISession>> Device::getSessions()
 {
-    std::vector<Session> result;
+    std::vector<std::shared_ptr<ISession>> result;
     auto count = getSessionCount();
     for (int i = 0; i < count; ++i)
         result.push_back(getSession(i));
@@ -107,4 +109,5 @@ void Device::dumpInfo(std::ostream& stream) {
     DUMP("getVolume") << getVolume() << std::endl;
     DUMP("getMute") << getMute() << std::endl;
     DUMP("getSessionCount") << getSessionCount() << std::endl;
+}
 }

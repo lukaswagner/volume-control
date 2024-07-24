@@ -4,6 +4,8 @@
 
 #include "helper.hpp"
 
+namespace VolumeControl
+{
 Volume::Volume()
 {
     auto result = CoInitializeEx(NULL, COINIT_MULTITHREADED);
@@ -19,30 +21,41 @@ Volume::Volume()
     CHECK(result, "could not acquire device enumerator");
 }
 
-Device Volume::getDefaultOutputDevice()
+std::shared_ptr<IDevice> Volume::getDefaultOutputDevice()
 {
     IMMDevice* device;
     auto result =
         m_devices->GetDefaultAudioEndpoint(eRender, eMultimedia, &device);
     CHECK(result, "could not acquire default device");
-    return Device(device);
+    return std::make_shared<Device>(device);
 }
 
-std::vector<Device> Volume::getAllDevices(DeviceType type)
+EDataFlow DeviceTypeMap[3] = {
+    EDataFlow::eRender,
+    EDataFlow::eCapture,
+    EDataFlow::eAll,
+};
+
+std::vector<std::shared_ptr<IDevice>> Volume::getAllDevices(DeviceType type)
 {
     IMMDeviceCollection* devices;
-    auto result = m_devices->EnumAudioEndpoints((EDataFlow)type, DEVICE_STATE_ACTIVE, &devices);
+    auto result = m_devices->EnumAudioEndpoints(DeviceTypeMap[type], DEVICE_STATE_ACTIVE, &devices);
     CHECK(result, "could not enumerate devices");
     unsigned int count;
     result = devices->GetCount(&count);
     CHECK(result, "could not get number of devices");
-    std::vector<Device> deviceList;
+    std::vector<std::shared_ptr<IDevice>> deviceList;
     for(auto i = 0u; i < count; ++i)
     {
         IMMDevice* device;
         result = devices->Item(i, &device);
         CHECK(result, "could not acquire device");
-        deviceList.emplace_back(device);
+        deviceList.push_back(std::make_shared<Device>(device));
     }
     return deviceList;
+}
+
+std::shared_ptr<IVolumeControl> init() {
+    return std::make_shared<Volume>();
+}
 }

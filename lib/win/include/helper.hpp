@@ -7,6 +7,8 @@
 
 #include <combaseapi.h>
 
+namespace VolumeControl
+{
 std::string toString(LPWSTR wstr, boolean freeWStr = true);
 std::string replaceEnvVars(std::string str);
 std::string getPath(std::string str);
@@ -21,3 +23,4 @@ std::string toDosPath(std::string path);
     stream << text << std::string(width - strlen(text), ' ') << ": "
 #define DUMPTO(stream, text) PADDED_HEADER(stream, text, 15)
 #define DUMP(text) DUMPTO(stream, text)
+}

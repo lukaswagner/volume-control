@@ -7,6 +7,7 @@ AlwaysBreakTemplateDeclarations: Yes
 BreakBeforeBraces: Allman
 BreakConstructorInitializers: BeforeComma
 ColumnLimit: 80
+FixNamespaceComments: false
 IncludeBlocks: Regroup
 IncludeCategories:
     - Regex: '<[^\.]*>'

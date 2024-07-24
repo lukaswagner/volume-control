@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "helper.hpp"
-#include "volume.hpp"
+// #include "helper.hpp"
+#include "ivolume.hpp"
 
 int main(int argc, char const* argv[])
 {
@@ -17,19 +17,18 @@ int main(int argc, char const* argv[])
 
     try
     {
-        Volume volume;
-        auto devices = volume.getAllDevices(Output);
-        DUMPTO(std::cerr, "num of devices") << devices.size() << std::endl;
+        auto volume = VolumeControl::init();
+        auto devices = volume->getAllDevices(VolumeControl::Output);
+        // DUMPTO(std::cerr, "num of devices") << devices.size() << std::endl;
         for (auto &&device : devices)
         {
-            if(verbose) device.dumpInfo(std::cerr);
-            else std::cerr << device.getName() << std::endl;
-            auto sessions = device.getSessions();
+            if(verbose) device->dumpInfo(std::cerr);
+            else std::cerr << device->getName() << std::endl;
+            auto sessions = device->getSessions();
             for (int i = 0; i < sessions.size(); ++i)
             {
-                auto session = sessions[i];
-                if(verbose) session.dumpInfo(std::cerr);
-                else std::cerr << session.getName() << std::endl;
+                if(verbose) sessions[i]->dumpInfo(std::cerr);
+                else std::cerr << sessions[i]->getName() << std::endl;
             }
         }
     }

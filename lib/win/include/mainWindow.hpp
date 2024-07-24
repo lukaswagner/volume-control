@@ -1,5 +1,7 @@
 #include <combaseapi.h>
 
+namespace VolumeControl
+{
 // copied from https://stackoverflow.com/a/21767578, names changed
 
 struct HandleData {
@@ -30,4 +32,5 @@ HWND FindMainWindow(unsigned long process_id)
     data.window_handle = 0;
     EnumWindows(EnumWindowsCallback, (LPARAM)&data);
     return data.window_handle;
+}
 }

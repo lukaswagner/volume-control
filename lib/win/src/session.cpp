@@ -6,6 +6,8 @@
 #include "helper.hpp"
 #include "mainWindow.hpp"
 
+namespace VolumeControl
+{
 Session::Session(IAudioSessionControl* control)
     : m_control(control)
 {
@@ -58,7 +60,7 @@ std::string Session::getPath()
         auto result = m_control->GetDisplayName(&displayName);
         CHECK(result, "could not read name");
         auto path = toString(displayName);
-        return ::getPath(path);
+        return VolumeControl::getPath(path);
     }
 
     // try reading session identifier (for applications)
@@ -67,7 +69,7 @@ std::string Session::getPath()
         m_control2->GetSessionIdentifier(&sessionIdentifier),
         "could not read session identifier");
     auto idStr = toString(sessionIdentifier);
-    return ::getPath(idStr);
+    return VolumeControl::getPath(idStr);
 }
 
 float Session::getVolume()
@@ -126,4 +128,5 @@ void Session::dumpInfo(std::ostream& stream)
     DUMP("getPath") << getPath() << std::endl;
     DUMP("getVolume") << getVolume() << std::endl;
     DUMP("getMute") << (getMute() ? "true" : "false") << std::endl;
+}
 }

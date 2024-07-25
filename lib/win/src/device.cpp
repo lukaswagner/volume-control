@@ -109,5 +109,6 @@ void Device::dumpInfo(std::ostream& stream) {
     DUMP("getVolume") << getVolume() << std::endl;
     DUMP("getMute") << getMute() << std::endl;
     DUMP("getSessionCount") << getSessionCount() << std::endl;
+    stream << std::endl;
 }
 }

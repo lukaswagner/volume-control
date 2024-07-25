@@ -1,12 +1,54 @@
 #include <iostream>
+#include <clocale>
+#include <memory>
 
-// #include "helper.hpp"
 #include "ivolume.hpp"
+
+template <typename T>
+std::string getVolume(T deviceOrSession)
+{
+    if(deviceOrSession->getMute())
+        return "mute";
+
+    auto vol = static_cast<int>(deviceOrSession->getVolume() * 100);
+    auto str = std::to_string(vol);
+    if (vol < 100) str.insert(0, 1, ' ');
+    str.append("%");
+    return str;
+
+}
+
+void logDevice(std::shared_ptr<VolumeControl::IDevice> device)
+{
+    std::cerr << "[" << getVolume(device) << "] " << device->getName() << std::endl;
+    for (const auto& session : device->getSessions())
+        std::cerr << "[" << getVolume(session) << "] " << session->getName() << std::endl;
+    std::cerr << std::endl;
+}
+
+void logDeviceVerbose(std::shared_ptr<VolumeControl::IDevice> device)
+{
+    device->dumpInfo(std::cerr);
+    for (const auto& session : device->getSessions())
+        session->dumpInfo(std::cerr);
+}
+
+void logDevices(
+    std::vector<std::shared_ptr<VolumeControl::IDevice>> devices,
+    bool verbose
+)
+{
+    for (const auto &device : devices)
+    {
+        if(verbose) logDeviceVerbose(device);
+        else logDevice(device);
+    }
+}
 
 int main(int argc, char const* argv[])
 {
     // required to fix wide character conversion
-    setlocale(LC_ALL, ".OCP");
+    std::setlocale(LC_ALL, "");
 
     auto verbose = false;
     for(auto i = 0; i < argc; ++i)
@@ -18,24 +60,18 @@ int main(int argc, char const* argv[])
     try
     {
         auto volume = VolumeControl::init();
-        auto devices = volume->getAllDevices(VolumeControl::Output);
-        // DUMPTO(std::cerr, "num of devices") << devices.size() << std::endl;
-        for (auto &&device : devices)
-        {
-            if(verbose) device->dumpInfo(std::cerr);
-            else std::cerr << device->getName() << std::endl;
-            auto sessions = device->getSessions();
-            for (int i = 0; i < sessions.size(); ++i)
-            {
-                if(verbose) sessions[i]->dumpInfo(std::cerr);
-                else std::cerr << sessions[i]->getName() << std::endl;
-            }
-        }
+
+        auto input = volume->getAllDevices(VolumeControl::Input);
+        std::cerr << "INPUT DEVICES" << std::endl << std::endl;
+        logDevices(input, verbose);
+
+        auto output = volume->getAllDevices(VolumeControl::Output);
+        std::cerr << "OUTPUT DEVICES" << std::endl << std::endl;
+        logDevices(output, verbose);
     }
     catch (const std::exception& e)
     {
         std::cerr << e.what() << std::endl;
     }
-    std::cerr << "done" << std::endl;
     return 0;
 }

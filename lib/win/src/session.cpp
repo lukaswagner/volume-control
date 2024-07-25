@@ -128,5 +128,6 @@ void Session::dumpInfo(std::ostream& stream)
     DUMP("getPath") << getPath() << std::endl;
     DUMP("getVolume") << getVolume() << std::endl;
     DUMP("getMute") << (getMute() ? "true" : "false") << std::endl;
+    stream << std::endl;
 }
 }

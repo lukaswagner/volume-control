@@ -1,0 +1,13 @@
+{
+    "name": "server",
+    "version": "0.0.1",
+    "description": "",
+    "author": "Lukas Wagner",
+    "license": "MIT",
+    "scripts": {
+        "start": "node index.mjs"
+    }
+    ,"dependencies": {
+        "volume-control": "file:../volume-control"
+    }
+}

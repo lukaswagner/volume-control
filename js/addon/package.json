@@ -1,0 +1,10 @@
+{
+  "name": "addon",
+  "version": "0.0.1",
+  "description": "",
+  "author": "Lukas Wagner",
+  "license": "MIT",
+  "devDependencies": {
+    "cmake-js": "^7.3.0"
+  }
+}

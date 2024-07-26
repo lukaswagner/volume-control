@@ -48,10 +48,12 @@ set_target_properties(VolumeControl PROPERTIES PUBLIC_HEADER "${lib_public_heade
 
 include(GNUInstallDirs)
 install(TARGETS VolumeControl
+    EXPORT VolumeControl
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(EXPORT VolumeControl DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 # executable sources
 set(cli_dir cli)

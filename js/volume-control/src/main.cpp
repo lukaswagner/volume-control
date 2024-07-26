@@ -1,17 +1,25 @@
 #include <node_api.h>
+#include <clocale>
+#include "ivolume.hpp"
 
 napi_value Method(napi_env env, napi_callback_info args)
 {
+    auto volume = VolumeControl::init();
+    auto deviceName = volume->getDefaultOutputDevice()->getName();
+
     napi_value greeting;
     napi_status status;
 
-    status = napi_create_string_utf8(env, "world", NAPI_AUTO_LENGTH, &greeting);
+    status = napi_create_string_latin1(env, deviceName.c_str(), NAPI_AUTO_LENGTH, &greeting);
     if (status != napi_ok) return nullptr;
     return greeting;
 }
 
 napi_value init(napi_env env, napi_value exports)
 {
+    // required to fix wide character conversion
+    std::setlocale(LC_ALL, "");
+
     napi_status status;
     napi_value fn;
 

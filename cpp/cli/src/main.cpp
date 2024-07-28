@@ -47,9 +47,6 @@ void logDevices(
 
 int main(int argc, char const* argv[])
 {
-    // required to fix wide character conversion
-    std::setlocale(LC_ALL, "");
-
     auto verbose = false;
     for(auto i = 0; i < argc; ++i)
     {

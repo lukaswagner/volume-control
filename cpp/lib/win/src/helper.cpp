@@ -6,16 +6,15 @@
 
 namespace VolumeControl
 {
-auto locale = _create_locale(LC_ALL, ".utf-8");
 std::string toString(LPWSTR wstr, boolean freeWStr)
 {
     size_t len;
-    auto result = _wcstombs_s_l(&len, NULL, 0, wstr, 0, locale);
+    auto result = wcstombs_s(&len, NULL, 0, wstr, 0);
     if (result != S_OK) throw std::runtime_error("could not determine string length");
     if (len == 0) return "";
 
     auto cstr = (char*)malloc((len + 1) * sizeof(char));
-    result = _wcstombs_s_l(&len, cstr, len + 1, wstr, len, locale);
+    result = wcstombs_s(&len, cstr, len + 1, wstr, len);
     if (result != S_OK) throw std::runtime_error("could not convert string");
 
     auto string = std::string(cstr);

@@ -4,7 +4,7 @@
 
 napi_value Method(napi_env env, napi_callback_info args)
 {
-    auto volume = VolumeControl::init();
+    auto volume = VolumeControl::init(".utf-8");
     auto deviceName = volume->getDefaultOutputDevice()->getName();
 
     napi_value greeting;

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 
 #include "vc_export.hpp"
 #include "idevice.hpp"
@@ -21,5 +22,5 @@ public:
     virtual std::vector<std::shared_ptr<IDevice>> getAllDevices(DeviceType type) = 0;
 };
 
-std::shared_ptr<IVolumeControl> VC_EXPORT init();
+std::shared_ptr<IVolumeControl> VC_EXPORT init(std::string locale = "");
 }

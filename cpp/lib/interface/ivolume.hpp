@@ -10,9 +10,9 @@
 namespace VolumeControl
 {
 enum DeviceType {
-    Output,
-    Input,
-    Both,
+    Output = 0b01,
+    Input = 0b10,
+    Both = 0b11,
 };
 
 class VC_EXPORT IVolumeControl

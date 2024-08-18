@@ -1,6 +1,7 @@
 #include "volume.hpp"
 
 #include <stdexcept>
+#include <unordered_map>
 
 #include "helper.hpp"
 
@@ -30,10 +31,10 @@ std::shared_ptr<IDevice> Volume::getDefaultOutputDevice()
     return std::make_shared<Device>(device);
 }
 
-EDataFlow DeviceTypeMap[3] = {
-    EDataFlow::eRender,
-    EDataFlow::eCapture,
-    EDataFlow::eAll,
+std::unordered_map<DeviceType, EDataFlow> DeviceTypeMap = {
+    {Output, EDataFlow::eRender},
+    {Input, EDataFlow::eCapture},
+    {Both, EDataFlow::eAll},
 };
 
 std::vector<std::shared_ptr<IDevice>> Volume::getAllDevices(DeviceType type)

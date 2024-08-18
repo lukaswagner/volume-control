@@ -1,31 +1,20 @@
-#include <node_api.h>
-#include <clocale>
+#include <napi.h>
 #include "ivolume.hpp"
 
-napi_value Method(napi_env env, napi_callback_info args)
+Napi::String Method(const Napi::CallbackInfo& info)
 {
     auto volume = VolumeControl::init(".utf-8");
     auto deviceName = volume->getDefaultOutputDevice()->getName();
-
-    napi_value greeting;
-    napi_status status;
-
-    status = napi_create_string_utf8(env, deviceName.c_str(), NAPI_AUTO_LENGTH, &greeting);
-    if (status != napi_ok) return nullptr;
-    return greeting;
+    Napi::Env env = info.Env();
+    return Napi::String::New(env, deviceName);
 }
 
-napi_value init(napi_env env, napi_value exports)
+Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
-    napi_status status;
-    napi_value fn;
-
-    status = napi_create_function(env, nullptr, 0, Method, nullptr, &fn);
-    if (status != napi_ok) return nullptr;
-
-    status = napi_set_named_property(env, exports, "hello", fn);
-    if (status != napi_ok) return nullptr;
+    exports.Set(
+        Napi::String::New(env, "hello"),
+        Napi::Function::New(env, Method));
     return exports;
 }
 
-NAPI_MODULE(NODE_GYP_MODULE_NAME, init)
+NODE_API_MODULE(hello, Init)

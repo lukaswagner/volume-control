@@ -56,8 +56,13 @@ std::vector<std::shared_ptr<IDevice>> Volume::getAllDevices(DeviceType type)
     return deviceList;
 }
 
+std::shared_ptr<Volume> instance;
 std::shared_ptr<IVolumeControl> init(std::string locale) {
-    setlocale(LC_ALL, locale.c_str());
-    return std::make_shared<Volume>();
+    if(!instance)
+    {
+        setlocale(LC_ALL, locale.c_str());
+        instance = std::make_shared<Volume>();
+    }
+    return instance;
 }
 }

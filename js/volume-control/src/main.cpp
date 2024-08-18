@@ -1,20 +1,31 @@
 #include <napi.h>
 #include "ivolume.hpp"
 
-Napi::String Method(const Napi::CallbackInfo& info)
+std::shared_ptr<VolumeControl::IVolumeControl> volumeControl;
+
+Napi::String test(const Napi::CallbackInfo& info)
 {
-    auto volume = VolumeControl::init(".utf-8");
-    auto deviceName = volume->getDefaultOutputDevice()->getName();
-    Napi::Env env = info.Env();
+    auto deviceName = volumeControl->getDefaultOutputDevice()->getName();
+    auto env = info.Env();
     return Napi::String::New(env, deviceName);
 }
 
-Napi::Object Init(Napi::Env env, Napi::Object exports)
+Napi::Value init(const Napi::CallbackInfo& info)
 {
-    exports.Set(
-        Napi::String::New(env, "hello"),
-        Napi::Function::New(env, Method));
+    if(!volumeControl)
+        volumeControl = VolumeControl::init(".utf-8");
+
+    auto env = info.Env();
+    auto result = Napi::Object::New(env);
+    result.Set("test", Napi::Function::New(env, test));
+
+    return result;
+}
+
+Napi::Object setup(Napi::Env env, Napi::Object exports)
+{
+    exports.Set("init", Napi::Function::New(env, init));
     return exports;
 }
 
-NODE_API_MODULE(hello, Init)
+NODE_API_MODULE(VolumeControl, setup)

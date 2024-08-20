@@ -13,6 +13,7 @@ export class VolumeControl {
 
 export class Device {
     getName(): string;
+    getId(): string;
     getVolume(): number;
     setVolume(volume: number): void;
     getMute(): boolean;

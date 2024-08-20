@@ -75,6 +75,15 @@ Napi::Value createDevice(Info info, Device device)
             }));
 
     nodeDevice.Set(
+        "getId",
+        Napi::Function::New(
+            env,
+            [device](Info info)
+            {
+                return Napi::String::New(info.Env(), device->getId());
+            }));
+
+    nodeDevice.Set(
         "getVolume",
         Napi::Function::New(
             env,

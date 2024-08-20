@@ -5,9 +5,10 @@
     "author": "Lukas Wagner",
     "license": "MIT",
     "scripts": {
-        "start": "node index.mjs"
-    }
-    ,"dependencies": {
+        "start": "node src/index.mjs"
+    },
+    "dependencies": {
+        "express": "^4.19.2",
         "volume-control": "file:../volume-control"
     }
 }

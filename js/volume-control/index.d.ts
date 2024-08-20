@@ -8,7 +8,7 @@ export enum DeviceType {
 
 export class VolumeControl {
     getDefaultOutputDevice(): Device;
-    getAllDevices(type: DeviceType): Device[];
+    getDevices(type: DeviceType): Device[];
 }
 
 export class Device {
@@ -17,8 +17,6 @@ export class Device {
     setVolume(volume: number): void;
     getMute(): boolean;
     setMute(mute?: boolean): void;
-    getSessionCount(): number;
-    getSession(id: number): Session;
     getSessions(): Session[];
 }
 

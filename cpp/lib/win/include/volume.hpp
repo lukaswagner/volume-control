@@ -16,6 +16,6 @@ private:
 public:
     Volume();
     std::shared_ptr<IDevice> getDefaultOutputDevice() override;
-    std::vector<std::shared_ptr<IDevice>> getAllDevices(DeviceType type) override;
+    std::vector<std::shared_ptr<IDevice>> getDevices(DeviceType type) override;
 };
 }

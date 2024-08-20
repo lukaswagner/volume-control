@@ -37,7 +37,7 @@ std::unordered_map<DeviceType, EDataFlow> DeviceTypeMap = {
     {Both, EDataFlow::eAll},
 };
 
-std::vector<std::shared_ptr<IDevice>> Volume::getAllDevices(DeviceType type)
+std::vector<std::shared_ptr<IDevice>> Volume::getDevices(DeviceType type)
 {
     IMMDeviceCollection* devices;
     auto result = m_devices->EnumAudioEndpoints(DeviceTypeMap[type], DEVICE_STATE_ACTIVE, &devices);

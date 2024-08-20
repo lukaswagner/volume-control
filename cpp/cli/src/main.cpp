@@ -58,11 +58,11 @@ int main(int argc, char const* argv[])
     {
         auto volume = VolumeControl::init();
 
-        auto input = volume->getAllDevices(VolumeControl::Input);
+        auto input = volume->getDevices(VolumeControl::Input);
         std::cerr << "INPUT DEVICES" << std::endl << std::endl;
         logDevices(input, verbose);
 
-        auto output = volume->getAllDevices(VolumeControl::Output);
+        auto output = volume->getDevices(VolumeControl::Output);
         std::cerr << "OUTPUT DEVICES" << std::endl << std::endl;
         logDevices(output, verbose);
     }

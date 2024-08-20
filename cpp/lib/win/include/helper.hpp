@@ -23,4 +23,6 @@ std::string toDosPath(std::string path);
     stream << text << std::string(width - strlen(text), ' ') << ": "
 #define DUMPTO(stream, text) PADDED_HEADER(stream, text, 15)
 #define DUMP(text) DUMPTO(stream, text)
+
+#define SAFE_RELEASE(p) if ((p)) { (p)->Release(); (p) = 0; }
 }

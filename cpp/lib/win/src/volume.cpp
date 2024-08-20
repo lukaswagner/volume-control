@@ -22,6 +22,11 @@ Volume::Volume()
     CHECK(result, "could not acquire device enumerator");
 }
 
+Volume::~Volume()
+{
+    SAFE_RELEASE(m_devices);
+}
+
 std::shared_ptr<IDevice> Volume::getDefaultOutputDevice()
 {
     IMMDevice* device;

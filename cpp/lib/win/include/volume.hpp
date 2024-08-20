@@ -15,6 +15,7 @@ private:
     IMMDeviceEnumerator* m_devices;
 public:
     Volume();
+    ~Volume();
     std::shared_ptr<IDevice> getDefaultOutputDevice() override;
     std::vector<std::shared_ptr<IDevice>> getDevices(DeviceType type) override;
 };

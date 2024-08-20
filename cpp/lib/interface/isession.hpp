@@ -10,6 +10,7 @@ namespace VolumeControl
 class VC_EXPORT ISession
 {
 public:
+    virtual ~ISession() {};
     virtual bool isSystem() = 0;
     virtual std::string getName() = 0;
     virtual std::string getPath() = 0;

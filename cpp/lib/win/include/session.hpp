@@ -18,6 +18,7 @@ private:
 
 public:
     Session(IAudioSessionControl* control);
+    ~Session();
     bool isSystem() override { return m_control2->IsSystemSoundsSession() == S_OK; };
     std::string getName() override;
     std::string getPath() override;

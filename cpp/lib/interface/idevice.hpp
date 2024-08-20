@@ -12,6 +12,7 @@ namespace VolumeControl
 class VC_EXPORT IDevice
 {
 public:
+    virtual ~IDevice() {};
     virtual std::string getId() = 0;
     virtual std::string getName() = 0;
     virtual float getVolume() = 0;

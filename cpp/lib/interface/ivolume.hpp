@@ -18,6 +18,7 @@ enum DeviceType {
 class VC_EXPORT IVolumeControl
 {
 public:
+    virtual ~IVolumeControl() {};
     virtual std::shared_ptr<IDevice> getDefaultOutputDevice() = 0;
     virtual std::vector<std::shared_ptr<IDevice>> getDevices(DeviceType type) = 0;
 };

@@ -15,6 +15,13 @@ Session::Session(IAudioSessionControl* control)
     m_control->QueryInterface(IID_PPV_ARGS(&m_control2));
 }
 
+Session::~Session()
+{
+    SAFE_RELEASE(m_control);
+    SAFE_RELEASE(m_control2);
+    SAFE_RELEASE(m_volume);
+}
+
 std::string Session::getName()
 {
     // check for system session

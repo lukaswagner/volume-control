@@ -32,6 +32,7 @@ private:
 
 public:
     Device(IMMDevice* device);
+    ~Device();
     std::string getId() override;
     std::string getName() override
     {

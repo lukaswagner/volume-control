@@ -41,6 +41,15 @@ Device::Device(IMMDevice* device)
     CHECK(result, "could not acquire session list");
 }
 
+Device::~Device()
+{
+    SAFE_RELEASE(m_device);
+    SAFE_RELEASE(m_deviceProperties);
+    SAFE_RELEASE(m_deviceVolume);
+    SAFE_RELEASE(m_sessionManager);
+    SAFE_RELEASE(m_sessionList);
+}
+
 std::string Device::getId()
 {
     LPWSTR id;

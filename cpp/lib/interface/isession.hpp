@@ -12,6 +12,7 @@ class VC_EXPORT ISession
 public:
     virtual ~ISession() {};
     virtual bool isSystem() = 0;
+    virtual std::string getId() = 0;
     virtual std::string getName() = 0;
     virtual std::string getPath() = 0;
     virtual float getVolume() = 0;

@@ -20,7 +20,12 @@ std::string Device::readProperty(REFPROPERTYKEY key)
 Device::Device(IMMDevice* device)
     : m_device(device)
 {
-    auto result = m_device->OpenPropertyStore(STGM_READ, &m_deviceProperties);
+    auto result = CoCreateGuid(&m_guid);
+    CHECK(result, "could not generate id");
+
+    m_id = guidToString(m_guid);
+
+    result = m_device->OpenPropertyStore(STGM_READ, &m_deviceProperties);
     CHECK(result, "could not acquire device properties");
 
     result = m_device->Activate(
@@ -52,10 +57,7 @@ Device::~Device()
 
 std::string Device::getId()
 {
-    LPWSTR id;
-    auto result = m_device->GetId(&id);
-    CHECK(result, "could not acquire device id");
-    return toString(id);
+    return m_id;
 }
 
 float Device::getVolume()

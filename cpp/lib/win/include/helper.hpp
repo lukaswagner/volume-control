@@ -13,6 +13,7 @@ std::string toString(LPWSTR wstr, boolean freeWStr = true);
 std::string replaceEnvVars(std::string str);
 std::string getPath(std::string str);
 std::string toDosPath(std::string path);
+std::string guidToString(GUID& guid);
 
 #define CHECK(status, message)                                                 \
     if (status != S_OK) throw std::runtime_error(message);

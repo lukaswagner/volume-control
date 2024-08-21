@@ -1,5 +1,6 @@
 #include "helper.hpp"
 
+#include <format>
 #include <regex>
 
 #include <fileapi.h>
@@ -19,7 +20,7 @@ std::string toString(LPWSTR wstr, boolean freeWStr)
 
     auto string = std::string(cstr);
     free(cstr);
-    if(freeWStr) CoTaskMemFree(wstr);
+    if (freeWStr) CoTaskMemFree(wstr);
     return string;
 }
 
@@ -34,10 +35,10 @@ std::string replaceEnvVars(std::string str)
         auto m = match[0];
         auto envName = m.str().substr(1, m.length() - 2);
 
-        // ignore warning for stdlib call
-        #pragma warning(disable: 4996)
+// ignore warning for stdlib call
+#pragma warning(disable : 4996)
         auto replacement = std::getenv(envName.c_str());
-        #pragma warning(default: 4996)
+#pragma warning(default : 4996)
 
         if (replacement == nullptr)
         {
@@ -108,9 +109,25 @@ std::string toDosPath(std::string path)
     for (auto&& p : deviceMap)
     {
         auto start = path.find(p.first);
-        if (start != -1)
-            path.replace(start, start + p.first.length(), p.second);
+        if (start != -1) path.replace(start, start + p.first.length(), p.second);
     }
     return path;
+}
+
+std::string guidToString(GUID& guid)
+{
+    return std::format(
+        "{:08X}-{:04X}-{:04X}-{:02X}{:02X}-{:02X}{:02X}{:02X}{:02X}{:02X}{:02X}",
+        guid.Data1,
+        guid.Data2,
+        guid.Data3,
+        guid.Data4[0],
+        guid.Data4[1],
+        guid.Data4[2],
+        guid.Data4[3],
+        guid.Data4[4],
+        guid.Data4[5],
+        guid.Data4[6],
+        guid.Data4[7]);
 }
 }

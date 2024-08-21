@@ -12,6 +12,8 @@ namespace VolumeControl
 class Session : public ISession
 {
 private:
+    GUID m_guid;
+    std::string m_id;
     IAudioSessionControl* m_control;
     IAudioSessionControl2* m_control2;
     ISimpleAudioVolume* m_volume;
@@ -20,6 +22,7 @@ public:
     Session(IAudioSessionControl* control);
     ~Session();
     bool isSystem() override { return m_control2->IsSystemSoundsSession() == S_OK; };
+    std::string getId() override;
     std::string getName() override;
     std::string getPath() override;
     float getVolume() override;

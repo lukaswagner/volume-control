@@ -11,6 +11,11 @@ namespace VolumeControl
 Session::Session(IAudioSessionControl* control)
     : m_control(control)
 {
+    auto result = CoCreateGuid(&m_guid);
+    CHECK(result, "could not generate id");
+
+    m_id = guidToString(m_guid);
+
     m_control->QueryInterface(IID_PPV_ARGS(&m_volume));
     m_control->QueryInterface(IID_PPV_ARGS(&m_control2));
 }
@@ -20,6 +25,11 @@ Session::~Session()
     SAFE_RELEASE(m_control);
     SAFE_RELEASE(m_control2);
     SAFE_RELEASE(m_volume);
+}
+
+std::string Session::getId()
+{
+    return m_id;
 }
 
 std::string Session::getName()

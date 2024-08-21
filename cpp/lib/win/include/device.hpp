@@ -23,6 +23,8 @@ namespace VolumeControl
 class Device : public IDevice
 {
 private:
+    GUID m_guid;
+    std::string m_id;
     IMMDevice* m_device;
     IPropertyStore* m_deviceProperties;
     IAudioEndpointVolume* m_deviceVolume;

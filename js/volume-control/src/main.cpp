@@ -22,6 +22,15 @@ Napi::Value createSession(Info info, Session session)
             }));
 
     nodeSession.Set(
+        "getId",
+        Napi::Function::New(
+            env,
+            [session](Info info)
+            {
+                return Napi::String::New(info.Env(), session->getId());
+            }));
+
+    nodeSession.Set(
         "getVolume",
         Napi::Function::New(
             env,

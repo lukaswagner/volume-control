@@ -23,6 +23,7 @@ export class Device {
 
 export class Session {
     getName(): string;
+    getId(): string;
     getVolume(): number;
     setVolume(volume: number): void;
     getMute(): boolean;

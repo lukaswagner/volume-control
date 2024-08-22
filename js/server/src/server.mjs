@@ -1,9 +1,12 @@
 import VolumeControl from 'volume-control';
 import express from 'express';
+import path from 'node:path';
+import url from 'node:url';
 
 const volume = VolumeControl.init();
 
-let defaultOutput = volume.getDefaultOutputDevice().getId();
+// needs static id to work!
+// let defaultOutput = volume.getDefaultOutputDevice().getId();
 
 /** @type {Map<string, VolumeControl.Device>} */
 let devices = new Map();
@@ -34,27 +37,37 @@ let deviceSessions = new Map();
     deviceSessions.set(d[0], new Set(s.map((s) => s.getId())));
 });
 
+console.log('devices:');
+devices.forEach((_, d) => console.log(d));
+console.log('sessions:');
+devices.forEach((_, s) => console.log(s));
+
 const app = express();
+const staticDir = path.join(url.fileURLToPath(import.meta.url), '../../static');
+app.use('/', express.static(staticDir));
 
 // top level routes
 
-app.get('/input', (req, res) => {
+app.get('/devices/input', (req, res) => {
     res.send([...inputDevices.keys()]);
 });
 
-app.get('/output', (req, res) => {
+app.get('/devices/output', (req, res) => {
     res.send([...outputDevices.keys()]);
 });
 
-app.get('/defaultOutput', (req, res) => {
-    res.send(defaultOutput);
-});
+// needs static id to work!
+// app.get('/devices/output/default', (req, res) => {
+//     res.send(defaultOutput);
+// });
 
 // device routes
 
-const deviceCheck = (req, res) => {
-    if (!devices.has(req.params.deviceId))
+const deviceCheck = (req, res, next) => {
+    if (!devices.has(req.params.deviceId)){
+        console.log(`invalid device request: ${req.params.deviceId}`)
         res.sendStatus(404);
+    }
     else
         next();
 }
@@ -65,7 +78,7 @@ app.get('/device/:deviceId/name', deviceCheck, (req, res) => {
 
 app.route('/device/:deviceId/volume')
     .get(deviceCheck, (req, res) => {
-        res.send(devices.get(req.params.deviceId).getVolume());
+        res.send(devices.get(req.params.deviceId).getVolume().toString());
     })
     .put(deviceCheck, (req, res) => {
         const val = Number.parseFloat(req.body);
@@ -79,7 +92,7 @@ app.route('/device/:deviceId/volume')
 
 app.route('/device/:deviceId/mute')
     .get(deviceCheck, (req, res) => {
-        res.send(devices.get(req.params.deviceId).getMute());
+        res.send(devices.get(req.params.deviceId).getMute().toString());
     })
     .put(deviceCheck, (req, res) => {
         const body = req.body.toLowerCase();

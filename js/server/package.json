@@ -5,7 +5,7 @@
     "author": "Lukas Wagner",
     "license": "MIT",
     "scripts": {
-        "start": "node src/index.mjs"
+        "start": "node src/server.mjs"
     },
     "dependencies": {
         "express": "^4.19.2",

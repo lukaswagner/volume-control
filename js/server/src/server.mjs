@@ -5,8 +5,7 @@ import url from 'node:url';
 
 const volume = VolumeControl.init();
 
-// needs static id to work!
-// let defaultOutput = volume.getDefaultOutputDevice().getId();
+let defaultOutput = volume.getDefaultOutputDevice().getId();
 
 /** @type {Map<string, VolumeControl.Device>} */
 let devices = new Map();
@@ -56,10 +55,9 @@ app.get('/devices/output', (req, res) => {
     res.send([...outputDevices.keys()]);
 });
 
-// needs static id to work!
-// app.get('/devices/output/default', (req, res) => {
-//     res.send(defaultOutput);
-// });
+app.get('/devices/output/default', (req, res) => {
+    res.send(defaultOutput);
+});
 
 // device routes
 
@@ -109,5 +107,50 @@ app.route('/device/:deviceId/mute')
 app.get('/device/:deviceId/sessions', deviceCheck, (req, res) => {
     res.send([...deviceSessions.get(req.params.deviceId)]);
 });
+
+// session routes
+
+const sessionCheck = (req, res, next) => {
+    if (!sessions.has(req.params.sessionId)){
+        console.log(`invalid session request: ${req.params.sessionId}`)
+        res.sendStatus(404);
+    }
+    else
+        next();
+}
+
+app.get('/session/:sessionId/name', sessionCheck, (req, res) => {
+    res.send(sessions.get(req.params.sessionId).getName());
+});
+
+app.route('/session/:sessionId/volume')
+    .get(sessionCheck, (req, res) => {
+        res.send(sessions.get(req.params.sessionId).getVolume().toString());
+    })
+    .put(sessionCheck, (req, res) => {
+        const val = Number.parseFloat(req.body);
+        if (Number.isNaN(val)) {
+            res.sendStatus(406);
+            return;
+        }
+        sessions.get(req.params.sessionId).setVolume(val);
+        res.sendStatus(200);
+    });
+
+app.route('/session/:sessionId/mute')
+    .get(deviceCheck, (req, res) => {
+        res.send(sessions.get(req.params.sessionId).getMute().toString());
+    })
+    .put(deviceCheck, (req, res) => {
+        const body = req.body.toLowerCase();
+        const parsedAsTrue = (body === 'true') || (body === '1');
+        const parsedAsFalse = (body === 'false') || (body === '0');
+        if (!parsedAsTrue && !parsedAsFalse) {
+            res.sendStatus(406);
+            return;
+        }
+        sessions.get(req.params.sessionId).setVolume(parsedAsTrue);
+        res.sendStatus(200);
+    });
 
 app.listen(8080)

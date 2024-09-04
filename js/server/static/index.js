@@ -14,15 +14,36 @@ async function get(path) {
 /**
  * @param {HTMLDivElement} container
  * @param {string} deviceId
+ * @param {boolean} isDefault
  */
-async function createDevice(container, deviceId) {
+async function createDevice(container, deviceId, isDefault) {
     const title = document.createElement('div');
-    title.innerText = await get(`/device/${deviceId}/name`);
+    const defaultTag = isDefault ? '[Default] ' : '';
+    title.innerText = defaultTag + await get(`/device/${deviceId}/name`);
 
     const controls = await createControls(`/device/${deviceId}`);
 
+    const sessionContainer = document.createElement('div');
+    const sessions = JSON.parse(await get(`/device/${deviceId}/sessions`));
+    sessions.forEach(async (s) => await createSession(sessionContainer, s));
+
     container.appendChild(title);
-    container.appendChild(controls)
+    container.appendChild(controls);
+    container.appendChild(sessionContainer);
+}
+
+/**
+ * @param {HTMLDivElement} container
+ * @param {string} sessionId
+ */
+async function createSession(container, sessionId) {
+    const title = document.createElement('div');
+    title.innerText = await get(`/session/${sessionId}/name`);
+
+    const controls = await createControls(`/session/${sessionId}`);
+
+    container.appendChild(title);
+    container.appendChild(controls);
 }
 
 /**
@@ -43,8 +64,9 @@ async function createControls(path) {
 }
 
 async function createDeviceList(container) {
+    const defaultDevice = await get('/devices/output/default');
     const devices = JSON.parse(await get('/devices/output'));
-    devices.forEach(async (d) => await createDevice(container, d));
+    devices.forEach(async (d) => await createDevice(container, d, d === defaultDevice));
 }
 
 const container = document.getElementById('vc');

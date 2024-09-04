@@ -12,6 +12,20 @@ async function get(path) {
 }
 
 /**
+ * @param {string} path
+ * @param {string} value
+ */
+async function put(path, value) {
+    console.log(`request: ${path} ${value}`);
+    const response = await fetch(path, { method: 'PUT', body: value });
+    if(response.status !== 200)
+        throw(`could not fetch ${path}`);
+    const content = await response.text();
+    console.log(`response: ${content}`);
+    return content;
+}
+
+/**
  * @param {HTMLDivElement} container
  * @param {string} deviceId
  * @param {boolean} isDefault
@@ -59,6 +73,7 @@ async function createControls(path) {
     volume.step = '0.01';
     volume.value = await get(`${path}/volume`);
     controls.appendChild(volume);
+    volume.onchange = () => put(`${path}/volume`, volume.value);
 
     return controls;
 }

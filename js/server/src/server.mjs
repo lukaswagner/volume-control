@@ -42,6 +42,8 @@ console.log('sessions:');
 devices.forEach((_, s) => console.log(s));
 
 const app = express();
+app.use(express.text());
+
 const staticDir = path.join(url.fileURLToPath(import.meta.url), '../../static');
 app.use('/', express.static(staticDir));
 
@@ -63,7 +65,7 @@ app.get('/devices/output/default', (req, res) => {
 
 const deviceCheck = (req, res, next) => {
     if (!devices.has(req.params.deviceId)){
-        console.log(`invalid device request: ${req.params.deviceId}`)
+        console.log(`invalid device request: ${req.params.deviceId}`);
         res.sendStatus(404);
     }
     else
@@ -81,6 +83,7 @@ app.route('/device/:deviceId/volume')
     .put(deviceCheck, (req, res) => {
         const val = Number.parseFloat(req.body);
         if (Number.isNaN(val)) {
+            console.log(`device - invalid volume request: ${req.body}`);
             res.sendStatus(406);
             return;
         }
@@ -97,6 +100,7 @@ app.route('/device/:deviceId/mute')
         const parsedAsTrue = (body === 'true') || (body === '1');
         const parsedAsFalse = (body === 'false') || (body === '0');
         if (!parsedAsTrue && !parsedAsFalse) {
+            console.log(`device - invalid mute request: ${req.body}`);
             res.sendStatus(406);
             return;
         }
@@ -130,6 +134,7 @@ app.route('/session/:sessionId/volume')
     .put(sessionCheck, (req, res) => {
         const val = Number.parseFloat(req.body);
         if (Number.isNaN(val)) {
+            console.log(`session - invalid volume request: ${req.body}`);
             res.sendStatus(406);
             return;
         }
@@ -146,6 +151,7 @@ app.route('/session/:sessionId/mute')
         const parsedAsTrue = (body === 'true') || (body === '1');
         const parsedAsFalse = (body === 'false') || (body === '0');
         if (!parsedAsTrue && !parsedAsFalse) {
+            console.log(`session - invalid mute request: ${req.body}`);
             res.sendStatus(406);
             return;
         }

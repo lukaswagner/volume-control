@@ -20,7 +20,8 @@ public:
     virtual bool getMute() = 0;
     virtual void setMute(bool mute) = 0;
     virtual int getSessionCount() = 0;
-    virtual std::shared_ptr<ISession> getSession(int id) = 0;
+    virtual std::vector<std::string> getSessionIds() = 0;
+    virtual std::shared_ptr<ISession> getSession(std::string id) = 0;
     virtual std::vector<std::shared_ptr<ISession>> getSessions() = 0;
     virtual void dumpInfo(std::ostream& stream) = 0;
 };

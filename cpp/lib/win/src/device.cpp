@@ -17,15 +17,20 @@ std::string Device::readProperty(REFPROPERTYKEY key)
     return toString(ptr);
 }
 
+std::string Device::getId(IMMDevice* device)
+{
+    LPWSTR id;
+    auto result = device->GetId(&id);
+    CHECK(result, "could not acquire device id");
+    return toString(id);
+}
+
 Device::Device(IMMDevice* device)
     : m_device(device)
 {
-    auto result = CoCreateGuid(&m_guid);
-    CHECK(result, "could not generate id");
+    m_id = getId(device);
 
-    m_id = guidToString(m_guid);
-
-    result = m_device->OpenPropertyStore(STGM_READ, &m_deviceProperties);
+    auto result = m_device->OpenPropertyStore(STGM_READ, &m_deviceProperties);
     CHECK(result, "could not acquire device properties");
 
     result = m_device->Activate(
@@ -96,20 +101,41 @@ int Device::getSessionCount()
     return count;
 }
 
-std::shared_ptr<ISession> Device::getSession(int id)
+std::vector<std::string> Device::getSessionIds()
 {
-    IAudioSessionControl* controls;
-    auto result = m_sessionList->GetSession(id, &controls);
-    CHECK(result, "could not acquire session");
-    return std::make_shared<Session>(controls);
-}
-
-std::vector<std::shared_ptr<ISession>> Device::getSessions()
-{
-    std::vector<std::shared_ptr<ISession>> result;
+    std::vector<std::string> sessionList;
     auto count = getSessionCount();
     for (int i = 0; i < count; ++i)
-        result.push_back(getSession(i));
+    {
+        IAudioSessionControl* session;
+        auto result = m_sessionList->GetSession(i, &session);
+        CHECK(result, "could not acquire session");
+
+        auto id = Session::getId(session);
+        if(m_sessionMap.find(id) == m_sessionMap.end())
+            m_sessionMap[id] = std::make_shared<Session>(session);
+        else
+            SAFE_RELEASE(session);
+
+        sessionList.push_back(id);
+    }
+    return sessionList;
+}
+
+SessionPtr Device::getSession(std::string id)
+{
+    auto session = m_sessionMap.find(id);
+    if(session != m_sessionMap.end())
+        return session->second;
+    throw std::runtime_error("unknown session id");
+}
+
+std::vector<SessionPtr> Device::getSessions()
+{
+    auto ids = getSessionIds();
+    std::vector<SessionPtr> result;
+    for(const auto& id : ids)
+        result.push_back(getSession(id));
     return result;
 }
 

@@ -8,13 +8,22 @@
 
 namespace VolumeControl
 {
+std::string Session::getId(IAudioSessionControl* control)
+{
+    IAudioSessionControl2* control2;
+    control->QueryInterface(IID_PPV_ARGS(&control2));
+
+    LPWSTR id;
+    auto result = control2->GetSessionInstanceIdentifier(&id);
+    CHECK(result, "could not acquire session id");
+    SAFE_RELEASE(control2);
+    return toString(id);
+}
+
 Session::Session(IAudioSessionControl* control)
     : m_control(control)
 {
-    auto result = CoCreateGuid(&m_guid);
-    CHECK(result, "could not generate id");
-
-    m_id = guidToString(m_guid);
+    m_id = getId(control);
 
     m_control->QueryInterface(IID_PPV_ARGS(&m_volume));
     m_control->QueryInterface(IID_PPV_ARGS(&m_control2));

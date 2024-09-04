@@ -27,13 +27,20 @@ Volume::~Volume()
     SAFE_RELEASE(m_devices);
 }
 
-std::shared_ptr<IDevice> Volume::getDefaultOutputDevice()
+std::string Volume::getDefaultOutputDeviceId()
 {
     IMMDevice* device;
     auto result =
         m_devices->GetDefaultAudioEndpoint(eRender, eMultimedia, &device);
     CHECK(result, "could not acquire default device");
-    return std::make_shared<Device>(device);
+
+    auto id = Device::getId(device);
+    if(m_deviceMap.find(id) == m_deviceMap.end())
+        m_deviceMap[id] = std::make_shared<Device>(device);
+    else
+        SAFE_RELEASE(device);
+
+    return id;
 }
 
 std::unordered_map<DeviceType, EDataFlow> DeviceTypeMap = {
@@ -42,7 +49,7 @@ std::unordered_map<DeviceType, EDataFlow> DeviceTypeMap = {
     {Both, EDataFlow::eAll},
 };
 
-std::vector<std::shared_ptr<IDevice>> Volume::getDevices(DeviceType type)
+std::vector<std::string> Volume::getDeviceIds(DeviceType type)
 {
     IMMDeviceCollection* devices;
     auto result = m_devices->EnumAudioEndpoints(DeviceTypeMap[type], DEVICE_STATE_ACTIVE, &devices);
@@ -50,19 +57,49 @@ std::vector<std::shared_ptr<IDevice>> Volume::getDevices(DeviceType type)
     unsigned int count;
     result = devices->GetCount(&count);
     CHECK(result, "could not get number of devices");
-    std::vector<std::shared_ptr<IDevice>> deviceList;
+    std::vector<std::string> deviceList;
     for(auto i = 0u; i < count; ++i)
     {
         IMMDevice* device;
         result = devices->Item(i, &device);
         CHECK(result, "could not acquire device");
-        deviceList.push_back(std::make_shared<Device>(device));
+
+        auto id = Device::getId(device);
+        if(m_deviceMap.find(id) == m_deviceMap.end())
+            m_deviceMap[id] = std::make_shared<Device>(device);
+        else
+            SAFE_RELEASE(device);
+
+        deviceList.push_back(id);
     }
     return deviceList;
 }
 
+DevicePtr Volume::getDevice(std::string id)
+{
+    auto device = m_deviceMap.find(id);
+    if(device != m_deviceMap.end())
+        return device->second;
+    throw std::runtime_error("unknown device id");
+}
+
+DevicePtr Volume::getDefaultOutputDevice()
+{
+    return getDevice(getDefaultOutputDeviceId());
+}
+
+std::vector<DevicePtr> Volume::getDevices(DeviceType type)
+{
+    auto ids = getDeviceIds(type);
+    std::vector<DevicePtr> result;
+    for(const auto& id : ids)
+        result.push_back(getDevice(id));
+    return result;
+}
+
 std::shared_ptr<Volume> instance;
-std::shared_ptr<IVolumeControl> init(std::string locale) {
+std::shared_ptr<IVolumeControl> init(std::string locale)
+{
     if(!instance)
     {
         setlocale(LC_ALL, locale.c_str());

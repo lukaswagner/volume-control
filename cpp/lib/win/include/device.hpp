@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -15,26 +16,28 @@
 #include <functiondiscoverykeys.h>
 // clang-format on
 
-/// https://www.reddit.com/r/cpp_questions/comments/rzv10h/whats_the_most_elegant_way_of_handling/
-// Option 1: Normal polymorphism with an abstract base class and concrete implementation derived classes with a factory method for creating the correct derived objects.
-
 namespace VolumeControl
 {
+using SessionPtr = std::shared_ptr<ISession>;
+
 class Device : public IDevice
 {
 private:
-    GUID m_guid;
     std::string m_id;
     IMMDevice* m_device;
     IPropertyStore* m_deviceProperties;
     IAudioEndpointVolume* m_deviceVolume;
     IAudioSessionManager2* m_sessionManager;
     IAudioSessionEnumerator* m_sessionList;
+    std::map<std::string, SessionPtr> m_sessionMap;
     std::string readProperty(REFPROPERTYKEY key);
 
 public:
+    static std::string getId(IMMDevice* device);
+
     Device(IMMDevice* device);
     ~Device();
+
     std::string getId() override;
     std::string getName() override
     {
@@ -44,9 +47,13 @@ public:
     void setVolume(float volume) override;
     bool getMute() override;
     void setMute(bool mute) override;
+
     int getSessionCount() override;
-    std::shared_ptr<ISession> getSession(int id) override;
-    std::vector<std::shared_ptr<ISession>> getSessions() override;
+    std::vector<std::string> getSessionIds() override;
+    SessionPtr getSession(std::string id) override;
+
+    std::vector<SessionPtr> getSessions() override;
+
     void dumpInfo(std::ostream& stream) override;
 };
 }

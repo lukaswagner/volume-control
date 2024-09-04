@@ -130,4 +130,12 @@ std::string guidToString(GUID& guid)
         guid.Data4[6],
         guid.Data4[7]);
 }
+
+std::string createId()
+{
+    GUID guid;
+    auto result = CoCreateGuid(&guid);
+    CHECK(result, "could not generate id");
+    return guidToString(guid);
+}
 }

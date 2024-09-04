@@ -6,6 +6,8 @@
 
 namespace VolumeControl
 {
+std::map<std::string, std::string> Device::s_idMap;
+
 std::string Device::readProperty(REFPROPERTYKEY key)
 {
     PROPVARIANT prop;
@@ -19,10 +21,22 @@ std::string Device::readProperty(REFPROPERTYKEY key)
 
 std::string Device::getId(IMMDevice* device)
 {
-    LPWSTR id;
-    auto result = device->GetId(&id);
+    LPWSTR idPtr;
+    auto result = device->GetId(&idPtr);
     CHECK(result, "could not acquire device id");
-    return toString(id);
+    auto winId = toString(idPtr);
+
+    std::string id;
+    auto idIter = s_idMap.find(winId);
+    if(idIter != s_idMap.end())
+        id = idIter->second;
+    else
+    {
+        id = createId();
+        s_idMap[winId] = id;
+    }
+
+    return id;
 }
 
 Device::Device(IMMDevice* device)

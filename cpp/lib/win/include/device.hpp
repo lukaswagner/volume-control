@@ -23,6 +23,8 @@ using SessionPtr = std::shared_ptr<ISession>;
 class Device : public IDevice
 {
 private:
+    static std::map<std::string, std::string> s_idMap;
+
     std::string m_id;
     IMMDevice* m_device;
     IPropertyStore* m_deviceProperties;
@@ -30,6 +32,7 @@ private:
     IAudioSessionManager2* m_sessionManager;
     IAudioSessionEnumerator* m_sessionList;
     std::map<std::string, SessionPtr> m_sessionMap;
+
     std::string readProperty(REFPROPERTYKEY key);
 
 public:

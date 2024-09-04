@@ -8,17 +8,32 @@
 
 namespace VolumeControl
 {
+std::map<std::string, std::string> Session::s_idMap;
+
 std::string Session::getId(IAudioSessionControl* control)
 {
     IAudioSessionControl2* control2;
     control->QueryInterface(IID_PPV_ARGS(&control2));
 
-    LPWSTR id;
-    auto result = control2->GetSessionInstanceIdentifier(&id);
+    LPWSTR idPtr;
+    auto result = control2->GetSessionInstanceIdentifier(&idPtr);
     CHECK(result, "could not acquire session id");
     SAFE_RELEASE(control2);
-    return toString(id);
+    auto winId = toString(idPtr);
+
+    std::string id;
+    auto idIter = s_idMap.find(winId);
+    if(idIter != s_idMap.end())
+        id = idIter->second;
+    else
+    {
+        id = createId();
+        s_idMap[winId] = id;
+    }
+
+    return id;
 }
+
 
 Session::Session(IAudioSessionControl* control)
     : m_control(control)
@@ -147,8 +162,7 @@ void Session::dumpInfo(std::ostream& stream)
         DUMP("process id") << w << std::endl;
     }
 
-    CHECK(m_control2->GetSessionIdentifier(&p), "GetSessionIdentifier failed");
-    DUMP("session id") << toString(p) << std::endl;
+    DUMP("session id") << getId() << std::endl;
 
     DUMP("getName") << getName() << std::endl;
     DUMP("getPath") << getPath() << std::endl;

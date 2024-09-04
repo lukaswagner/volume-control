@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <map>
 #include <string>
 
 #include <audiopolicy.h>
@@ -12,6 +13,8 @@ namespace VolumeControl
 class Session : public ISession
 {
 private:
+    static std::map<std::string, std::string> s_idMap;
+
     std::string m_id;
     IAudioSessionControl* m_control;
     IAudioSessionControl2* m_control2;

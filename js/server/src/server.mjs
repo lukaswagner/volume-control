@@ -39,7 +39,7 @@ let deviceSessions = new Map();
 console.log('devices:');
 devices.forEach((_, d) => console.log(d));
 console.log('sessions:');
-devices.forEach((_, s) => console.log(s));
+sessions.forEach((_, s) => console.log(s));
 
 const app = express();
 app.use(express.text());
@@ -49,12 +49,25 @@ app.use('/', express.static(staticDir));
 
 // top level routes
 
+function sortKeys(map, checkDefault) {
+    return [...map.keys()].sort((a, b) => {
+        if(checkDefault) {
+            if(a === b) return 0;
+            if(a === defaultOutput) return -1;
+            if(b === defaultOutput) return 1;
+        }
+        const nameA = map.get(a).getName();
+        const nameB = map.get(b).getName();
+        return nameA.localeCompare(nameB);
+    })
+}
+
 app.get('/devices/input', (req, res) => {
-    res.send([...inputDevices.keys()]);
+    res.send(sortKeys(inputDevices, false));
 });
 
 app.get('/devices/output', (req, res) => {
-    res.send([...outputDevices.keys()]);
+    res.send(sortKeys(outputDevices, true));
 });
 
 app.get('/devices/output/default', (req, res) => {
@@ -109,7 +122,12 @@ app.route('/device/:deviceId/mute')
     });
 
 app.get('/device/:deviceId/sessions', deviceCheck, (req, res) => {
-    res.send([...deviceSessions.get(req.params.deviceId)]);
+    res.send([...deviceSessions.get(req.params.deviceId)]
+        .sort((a, b) => {
+            const nameA = sessions.get(a).getName();
+            const nameB = sessions.get(b).getName();
+            return nameA.localeCompare(nameB);
+        }));
 });
 
 // session routes

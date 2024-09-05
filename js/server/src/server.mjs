@@ -161,10 +161,10 @@ app.route('/session/:sessionId/volume')
     });
 
 app.route('/session/:sessionId/mute')
-    .get(deviceCheck, (req, res) => {
+    .get(sessionCheck, (req, res) => {
         res.send(sessions.get(req.params.sessionId).getMute().toString());
     })
-    .put(deviceCheck, (req, res) => {
+    .put(sessionCheck, (req, res) => {
         const body = req.body.toLowerCase();
         const parsedAsTrue = (body === 'true') || (body === '1');
         const parsedAsFalse = (body === 'false') || (body === '0');

@@ -66,6 +66,12 @@ async function createSession(container, sessionId) {
 async function createControls(path) {
     const controls = document.createElement('div');
 
+    const mute = document.createElement('input');
+    mute.type = 'checkbox';
+    mute.checked = await get(`${path}/mute`) === 'true';
+    controls.appendChild(mute);
+    mute.onchange = () => put(`${path}/mute`, mute.checked.toString());
+
     const volume = document.createElement('input');
     volume.type = 'range';
     volume.min = '0';

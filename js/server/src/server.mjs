@@ -117,7 +117,7 @@ app.route('/device/:deviceId/mute')
             res.sendStatus(406);
             return;
         }
-        devices.get(req.params.deviceId).setVolume(parsedAsTrue);
+        devices.get(req.params.deviceId).setMute(parsedAsTrue);
         res.sendStatus(200);
     });
 
@@ -173,7 +173,7 @@ app.route('/session/:sessionId/mute')
             res.sendStatus(406);
             return;
         }
-        sessions.get(req.params.sessionId).setVolume(parsedAsTrue);
+        sessions.get(req.params.sessionId).setMute(parsedAsTrue);
         res.sendStatus(200);
     });
 

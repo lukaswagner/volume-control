@@ -1,9 +1,37 @@
+body {
+    font-family: sans-serif;
+    width: max-content;
+}
+
+.container {
+    padding: 0.5em;
+    margin-top: 0.5em;
+    outline: 1px solid #000;
+    border-radius: 0.2em;
+    background-color: #eee;
+}
+
+.container .container {
+    background-color: #fff;
+}
+
+.controls {
+    display: flex;
+    flex-direction: row;
+    justify-items: center;
+    margin-top: 0.5em;
+    gap: 0.5em;
+}
+
 .mute {
     width: 2em;
     height: 2em;
-    color: red;
+    outline: 1px solid #000;
+    border: none;
+    border-radius: 0.2em;
+    background-color: #faa;
 }
 
 .mute.unmute {
-    filter: grayscale(100%);
+    background-color: #afa;
 }

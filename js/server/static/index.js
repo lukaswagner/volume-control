@@ -26,11 +26,13 @@ async function put(path, value) {
 }
 
 /**
- * @param {HTMLDivElement} container
  * @param {string} deviceId
  * @param {boolean} isDefault
  */
-async function createDevice(container, deviceId, isDefault) {
+async function createDevice(deviceId, isDefault) {
+    const container = document.createElement('div');
+    container.classList.add('container');
+
     const title = document.createElement('div');
     const defaultTag = isDefault ? '[Default] ' : '';
     title.innerText = defaultTag + await get(`/device/${deviceId}/name`);
@@ -39,18 +41,21 @@ async function createDevice(container, deviceId, isDefault) {
 
     const sessionContainer = document.createElement('div');
     const sessions = JSON.parse(await get(`/device/${deviceId}/sessions`));
-    sessions.forEach(async (s) => await createSession(sessionContainer, s));
+    sessions.forEach(async (s) => sessionContainer.appendChild(await createSession(s)));
 
     container.appendChild(title);
     container.appendChild(controls);
     container.appendChild(sessionContainer);
+    return container;
 }
 
 /**
- * @param {HTMLDivElement} container
  * @param {string} sessionId
  */
-async function createSession(container, sessionId) {
+async function createSession(sessionId) {
+    const container = document.createElement('div');
+    container.classList.add('container');
+
     const title = document.createElement('div');
     title.innerText = await get(`/session/${sessionId}/name`);
 
@@ -58,6 +63,7 @@ async function createSession(container, sessionId) {
 
     container.appendChild(title);
     container.appendChild(controls);
+    return container;
 }
 
 /**
@@ -65,10 +71,11 @@ async function createSession(container, sessionId) {
  */
 async function createControls(path) {
     const controls = document.createElement('div');
+    controls.classList.add('controls');
 
     let isMute = await get(`${path}/mute`) === 'true';
     const mute = document.createElement('button');
-    mute.innerHTML = '&#8416;';
+    mute.innerHTML = '&#128264;';
     mute.classList.add('mute');
     if(!isMute) mute.classList.add('unmute');
     mute.onclick = () => {
@@ -96,7 +103,8 @@ async function createControls(path) {
 async function createDeviceList(container) {
     const defaultDevice = await get('/devices/output/default');
     const devices = JSON.parse(await get('/devices/output'));
-    devices.forEach(async (d) => await createDevice(container, d, d === defaultDevice));
+    devices.forEach(async (d) =>
+        container.appendChild(await createDevice(d, d === defaultDevice)));
 }
 
 const container = document.getElementById('vc');

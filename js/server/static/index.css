@@ -1,0 +1,9 @@
+.mute {
+    width: 2em;
+    height: 2em;
+    color: red;
+}
+
+.mute.unmute {
+    filter: grayscale(100%);
+}

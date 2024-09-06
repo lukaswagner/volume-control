@@ -66,11 +66,20 @@ async function createSession(container, sessionId) {
 async function createControls(path) {
     const controls = document.createElement('div');
 
-    const mute = document.createElement('input');
-    mute.type = 'checkbox';
-    mute.checked = await get(`${path}/mute`) === 'true';
+    let isMute = await get(`${path}/mute`) === 'true';
+    const mute = document.createElement('button');
+    mute.innerHTML = '&#8416;';
+    mute.classList.add('mute');
+    if(!isMute) mute.classList.add('unmute');
+    mute.onclick = () => {
+        isMute = !isMute;
+        if(isMute)
+            mute.classList.remove('unmute');
+        else
+            mute.classList.add('unmute');
+        put(`${path}/mute`, isMute.toString());
+    };
     controls.appendChild(mute);
-    mute.onchange = () => put(`${path}/mute`, mute.checked.toString());
 
     const volume = document.createElement('input');
     volume.type = 'range';
@@ -78,8 +87,8 @@ async function createControls(path) {
     volume.max = '1';
     volume.step = '0.01';
     volume.value = await get(`${path}/volume`);
-    controls.appendChild(volume);
     volume.onchange = () => put(`${path}/volume`, volume.value);
+    controls.appendChild(volume);
 
     return controls;
 }

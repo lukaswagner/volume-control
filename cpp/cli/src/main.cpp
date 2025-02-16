@@ -45,6 +45,37 @@ void logDevices(
     }
 }
 
+std::unordered_map<VolumeControl::DeviceState, std::string> DeviceStateMap = {
+    {VolumeControl::Active, "active"},
+    {VolumeControl::Disabled, "disabled"},
+    {VolumeControl::NotPresent, "not present"},
+    {VolumeControl::Unplugged, "unplugged"},
+};
+
+void logEvent(VolumeControl::Event event)
+{
+    std::cerr << "EVENT: " << event.id << " - ";
+    switch (event.type)
+    {
+    case VolumeControl::DeviceAdded:
+        std::cerr << "added";
+        break;
+    case VolumeControl::DeviceRemoved:
+        std::cerr << "removed";
+        break;
+    case VolumeControl::DeviceStateChanged:
+        std::cerr << "state changed to " << DeviceStateMap[event.data->state];
+        break;
+    case VolumeControl::DefaultDeviceChanged:
+        std::cerr << "new default device";
+        break;
+
+    default:
+        break;
+    }
+    std::cerr << std::endl;
+}
+
 int main(int argc, char const* argv[])
 {
     auto verbose = false;
@@ -65,10 +96,17 @@ int main(int argc, char const* argv[])
         auto output = volume->getDevices(VolumeControl::Output);
         std::cerr << "OUTPUT DEVICES" << std::endl << std::endl;
         logDevices(output, verbose);
+
+        VolumeControl::EventListener listener = [](VolumeControl::Event event) { logEvent(event); };
+        volume->registerListener(&listener);
+        std::cerr << "press enter to quit" << std::endl;
+        std::getchar();
+        volume->unregisterListener(&listener);
     }
     catch (const std::exception& e)
     {
         std::cerr << e.what() << std::endl;
     }
+
     return 0;
 }

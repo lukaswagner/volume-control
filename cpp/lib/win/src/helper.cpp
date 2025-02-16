@@ -7,7 +7,7 @@
 
 namespace VolumeControl
 {
-std::string toString(LPWSTR wstr, boolean freeWStr)
+std::string toStringConst(LPCWSTR wstr)
 {
     size_t len;
     auto result = wcstombs_s(&len, NULL, 0, wstr, 0);
@@ -20,6 +20,12 @@ std::string toString(LPWSTR wstr, boolean freeWStr)
 
     auto string = std::string(cstr);
     free(cstr);
+    return string;
+}
+
+std::string toString(LPWSTR wstr, boolean freeWStr)
+{
+    auto string = toStringConst(wstr);
     if (freeWStr) CoTaskMemFree(wstr);
     return string;
 }

@@ -9,6 +9,7 @@
 
 namespace VolumeControl
 {
+std::string toStringConst(LPCWSTR wstr);
 std::string toString(LPWSTR wstr, boolean freeWStr = true);
 std::string replaceEnvVars(std::string str);
 std::string getPath(std::string str);
